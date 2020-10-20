@@ -1,4 +1,4 @@
-package me.fdulger.wkt.geometry.wkt
+package me.fdulger.wkt
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -12,9 +12,16 @@ import me.fdulger.wkt.geometry.MultiPolygon
 import me.fdulger.wkt.geometry.Point
 import me.fdulger.wkt.geometry.Polygon
 
-class WKTWriter internal constructor() {
-    var df: DecimalFormat
-    fun writePoint(p: Point, printName: Boolean): String {
+class WKTWriter {
+
+    private val df: DecimalFormat
+    init {
+        val otherSymbols = DecimalFormatSymbols(Locale.getDefault())
+        otherSymbols.decimalSeparator = '.'
+        df = DecimalFormat("#.#", otherSymbols)
+    }
+
+    private fun writePoint(p: Point, printName: Boolean): String {
         val result = StringBuilder(if (printName) "POINT " else "")
         if (p.isEmpty()) {
             result.append("EMPTY")
@@ -28,18 +35,18 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writePoint(p: Point): String {
+    private fun writePoint(p: Point): String {
         return writePoint(p, true)
     }
 
-    fun writeLineString(ls: LineString, printName: Boolean): String {
+    private fun writeLineString(ls: LineString, printName: Boolean): String {
         val result = StringBuilder(if (printName) "LINESTRING " else "")
         if (ls.isEmpty()) {
             result.append("EMPTY")
             return result.toString()
         }
         result.append("(")
-        for (i in 0 until ls.numCoords) {
+        for (i in 0 until ls.size()) {
             result.append(df.format(ls.getX(i)))
                     .append(" ")
                     .append(df.format(ls.getY(i)))
@@ -50,20 +57,20 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writeLineString(ls: LineString): String {
+    private fun writeLineString(ls: LineString): String {
         return writeLineString(ls, true)
     }
 
-    fun writePolygon(p: Polygon, printName: Boolean): String {
+    private fun writePolygon(p: Polygon, printName: Boolean): String {
         val result = StringBuilder(if (printName) "POLYGON " else "")
         if (p.isEmpty()) {
             result.append("EMPTY")
             return result.toString()
         }
         result.append("(")
-        result.append(writeLineString(p.outer!!, false))
+        result.append(writeLineString(p.outer, false))
                 .append(", ")
-        for (i in 0 until p.numHoles) {
+        for (i in 0 until p.numHoles()) {
             result.append(writeLineString(p.getHole(i)!!, false))
                     .append(", ")
         }
@@ -72,11 +79,11 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writePolygon(p: Polygon): String {
+    private fun writePolygon(p: Polygon): String {
         return writePolygon(p, true)
     }
 
-    fun writeGeometryCollection(gc: GeometryCollection): String {
+    private fun writeGeometryCollection(gc: GeometryCollection): String {
         val result = StringBuilder("GEOMETRYCOLLECTION ")
         if (gc.isEmpty()) {
             result.append("EMPTY")
@@ -84,7 +91,7 @@ class WKTWriter internal constructor() {
         }
         result.append("(")
         for (i in 0 until gc.size()) {
-            result.append(write(gc.get(i)))
+            result.append(write(gc[i]))
                     .append(", ")
         }
         result.replace(result.length - 2, result.length, "")
@@ -92,7 +99,7 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writeMultiPoint(mp: MultiPoint): String {
+    private fun writeMultiPoint(mp: MultiPoint): String {
         val result = StringBuilder("MULTIPOINT ")
         if (mp.isEmpty()) {
             result.append("EMPTY")
@@ -100,7 +107,7 @@ class WKTWriter internal constructor() {
         }
         result.append("(")
         for (i in 0 until mp.size()) {
-            result.append(writePoint(mp.get(i) as Point, false))
+            result.append(writePoint(mp[i] as Point, false))
                     .append(", ")
         }
         result.replace(result.length - 2, result.length, "")
@@ -108,7 +115,7 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writeMultiLineString(mls: MultiLineString): String {
+    private fun writeMultiLineString(mls: MultiLineString): String {
         val result = StringBuilder("MULTILINESTRING ")
         if (mls.isEmpty()) {
             result.append("EMPTY")
@@ -116,7 +123,7 @@ class WKTWriter internal constructor() {
         }
         result.append("(")
         for (i in 0 until mls.size()) {
-            result.append(writeLineString(mls.get(i) as LineString, false))
+            result.append(writeLineString(mls[i] as LineString, false))
                     .append(", ")
         }
         result.replace(result.length - 2, result.length, "")
@@ -124,7 +131,7 @@ class WKTWriter internal constructor() {
         return result.toString()
     }
 
-    fun writeMultiPolygon(mls: MultiPolygon): String {
+    private fun writeMultiPolygon(mls: MultiPolygon): String {
         val result = StringBuilder("MULTIPOLYGON ")
         if (mls.isEmpty()) {
             result.append("EMPTY")
@@ -132,7 +139,7 @@ class WKTWriter internal constructor() {
         }
         result.append("(")
         for (i in 0 until mls.size()) {
-            result.append(writePolygon(mls.get(i) as Polygon, false))
+            result.append(writePolygon(mls[i] as Polygon, false))
                     .append(", ")
         }
         result.replace(result.length - 2, result.length, "")
@@ -148,33 +155,15 @@ class WKTWriter internal constructor() {
     `</pre> *
      */
     fun write(geom: Geometry): String {
-        if (geom is Point) {
-            return writePoint(geom as Point)
+        return when (geom) {
+            is Point -> writePoint(geom)
+            is LineString -> writeLineString(geom)
+            is Polygon -> writePolygon(geom)
+            is MultiPoint -> writeMultiPoint(geom)
+            is MultiLineString -> writeMultiLineString(geom)
+            is MultiPolygon -> writeMultiPolygon(geom)
+            else ->
+                if (geom is GeometryCollection) writeGeometryCollection(geom) else "Unknown geometry type."
         }
-        if (geom is LineString) {
-            return writeLineString(geom as LineString)
-        }
-        if (geom is Polygon) {
-            return writePolygon(geom as Polygon)
-        }
-        if (geom is MultiPoint) {
-            return writeMultiPoint(geom as MultiPoint)
-        }
-        if (geom is MultiLineString) {
-            return writeMultiLineString(geom as MultiLineString)
-        }
-        if (geom is MultiPolygon) {
-            return writeMultiPolygon(geom as MultiPolygon)
-        }
-        return if (geom is GeometryCollection) {
-            writeGeometryCollection(geom as GeometryCollection)
-        }
-        else "Unknown geometry type."
-    }
-
-    init {
-        val otherSymbols = DecimalFormatSymbols(Locale.getDefault())
-        otherSymbols.setDecimalSeparator('.')
-        df = DecimalFormat("#.#", otherSymbols)
     }
 }

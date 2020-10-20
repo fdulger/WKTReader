@@ -1,40 +1,22 @@
 package me.fdulger.wkt.geometry
 
-import java.util.*
+class Polygon @JvmOverloads constructor(
+        val outer: LineString = LineString(),
+        private val holes: List<LineString> = emptyList()): Geometry {
 
-class Polygon @JvmOverloads constructor(val outer: LineString? = null, private val holes: List<LineString?>? = null) : Geometry {
-    override fun isEmpty(): Boolean {
-        return outer == null
-    }
+    override fun isEmpty(): Boolean = outer.isEmpty()
 
-    val numHoles: Int
-        get() = holes?.size ?: 0
+    fun numHoles(): Int = holes.size
 
-    fun getHole(index: Int): LineString? {
-        return holes!![index]
-    }
+    fun getHole(index: Int): LineString? = holes[index]
+    override fun toString(): String = if (outer.isEmpty()) "Poly ()" else "Poly($outer, $holes)"
 
-    private fun validateRings() {
-        if (outer == null) {
-            require(holes == null || holes!!.isEmpty()) { "Empty polygon cannot have holes" }
-        } else require(outer.isClosed) { "Outer ring not closed" }
-        if(holes != null) {
-            for (hole in holes) {
-                require(hole!!.isClosed) { "Hole ring not closed" }
-            }
-        }
-    }
-
-    override fun toString(): String {
-        return if (outer == null) {
-            "Poly ()"
-        } else "Poly($outer, $holes)"
-    }
-
-    /**
-     * Creates an empty polygon
-     */
     init {
-        validateRings()
+        if (outer.isEmpty()) {
+            require(holes.isEmpty()) { "Empty polygon cannot have holes" }
+        } else require(outer.isClosed()) { "Outer ring must be closed" }
+        for (hole in holes) {
+            require(hole.isClosed()) { "Hole ring not closed" }
+        }
     }
 }

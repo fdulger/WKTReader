@@ -1,7 +1,6 @@
 package me.fdulger.wkt
 
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.StringTokenizer
 import me.fdulger.wkt.geometry.Geometry
 import me.fdulger.wkt.geometry.GeometryCollection
@@ -13,74 +12,73 @@ import me.fdulger.wkt.geometry.Point
 import me.fdulger.wkt.geometry.Polygon
 
 class WKTReader {
-    fun readDoubleArray(st: StringTokenizer): DoubleArray? {
-        val list: ArrayList<Double> = ArrayList<Double>()
-        val skip = listOf("(", ",", " ")
+    private fun readPoints(st: StringTokenizer): List<Point> {
+        val result: MutableList<Point> = mutableListOf()
+        val skip = listOf("(",","," ")
+
         var token: String = st.nextToken()
-        while (!token.equals(")")) {
-            if (token.equals("EMPTY")) {
-                return null
+        if (token == "EMPTY") {
+            return emptyList()
+        }
+        var x = Double.NaN
+        while (token != ")") {
+            if(token in skip) {
+                token = st.nextToken()
+                continue
             }
-            if (!skip.contains(token)) {
-                list.add(token.toDouble())
+            if (x.isNaN()) {
+                x = token.toDouble()
+            } else {
+                result += Point(x, token.toDouble())
+                x = Double.NaN
             }
             token = st.nextToken()
-        }
-        val result = DoubleArray(list.size)
-        for (i in 0 until list.size) {
-            result[i] = list.get(i)
         }
         return result
     }
 
-    fun readPoint(st: StringTokenizer): Point {
-        val coords = readDoubleArray(st)
-        return if (coords == null) Point() else Point(coords[0], coords[1])
-    }
+    private fun readPoint(st: StringTokenizer): Point = readPoints(st)[0]
 
-    fun readLineString(st: StringTokenizer): LineString {
-        val coords = readDoubleArray(st)
-        return coords?.let { LineString(it) } ?: LineString()
-    }
+    private fun readLineString(st: StringTokenizer): LineString = LineString(readPoints(st))
 
-    fun readPolygon(st: StringTokenizer): Polygon {
+    private fun readPolygon(st: StringTokenizer): Polygon {
         val outer: LineString = readLineString(st)
         if (outer.isEmpty()) {
             return Polygon()
         }
         val holes: ArrayList<LineString> = ArrayList<LineString>()
         var token: String = st.nextToken()
-        while (!token.equals(")")) {
+        while (token != ")") {
             holes.add(readLineString(st))
             token = st.nextToken()
         }
         return Polygon(outer, holes)
     }
 
-    fun readMultiPoint(st: StringTokenizer): MultiPoint {
+    private fun readMultiPoint(st: StringTokenizer): MultiPoint {
         var token: String = st.nextToken()
         val points: ArrayList<Point> = ArrayList<Point>()
-        while (!token.equals(")")) {
+        while (token != ")") {
             points.add(readPoint(st))
             token = st.nextToken()
         }
         return MultiPoint(points)
     }
 
-    fun readMultiLineString(st: StringTokenizer): MultiLineString {
+    private fun readMultiLineString(st: StringTokenizer): MultiLineString {
         var token: String = st.nextToken()
         val lineStrings: ArrayList<LineString> = ArrayList<LineString>()
-        while (!token.equals(")")) {
+        while (token != ")") {
             lineStrings.add(readLineString(st))
             token = st.nextToken()
         }
         return MultiLineString(lineStrings)
     }
 
-    fun readMultiPolygon(st: StringTokenizer): MultiPolygon {
+    private fun readMultiPolygon(st: StringTokenizer): MultiPolygon {
         var token: String = st.nextToken()
         val polygons: ArrayList<Polygon> = ArrayList<Polygon>()
-        while (!token.equals(")")) {
+        while (token != ")") {
             polygons.add(readPolygon(st))
             token = st.nextToken()
         }
@@ -95,44 +93,47 @@ class WKTReader {
         if (!st.hasMoreElements()) {
             return null
         }
-        val name = st.nextElement() as String
-        var result: Geometry? = Point()
-        if (name.equals("POINT")) {
-            result = readPoint(st)
-        } else if (name.equals("LINESTRING")) {
-            result = readLineString(st)
-        } else if (name.equals("POLYGON")) {
-            result = readPolygon(st)
-        } else if (name.equals("MULTIPOINT")) {
-            result = readMultiPoint(st)
-        } else if (name.equals("MULTILINESTRING")) {
-            result = readMultiLineString(st)
-        } else if (name.equals("MULTIPOLYGON")) {
-            result = readMultiPolygon(st)
-        } else if (name.equals("GEOMETRYCOLLECTION")) {
-            val geometries: ArrayList<Geometry> = ArrayList<Geometry>()
-            var token: String = st.nextToken()
-            while (!token.equals(")")) {
-                if (token.equals("POINT")) {
+        return when (val name = st.nextElement()) {
+            "POINT" -> readPoint(st)
+            "LINESTRING" -> readLineString(st)
+            "POLYGON" -> readPolygon(st)
+            "MULTIPOINT" -> readMultiPoint(st)
+            "MULTILINESTRING" -> readMultiLineString(st)
+            "MULTIPOLYGON" -> readMultiPolygon(st)
+            "GEOMETRYCOLLECTION" -> readGeometryCollection(st)
+            else -> {
+                System.err.println("Unknown geometry type: $name")
+                null
+            }
+        }
+    }
+
+    private fun readGeometryCollection(st: StringTokenizer): GeometryCollection {
+        val geometries: ArrayList<Geometry> = ArrayList<Geometry>()
+        var token: String = st.nextToken()
+        while (token != ")") {
+            when (token) {
+                "POINT" -> {
                     geometries.add(readPoint(st))
-                } else if (token.equals("LINESTRING")) {
+                }
+                "LINESTRING" -> {
                     geometries.add(readLineString(st))
-                } else if (token.equals("POLYGON")) {
+                }
+                "POLYGON" -> {
                     geometries.add(readPolygon(st))
-                } else if (token.equals("MULTIPOINT")) {
+                }
+                "MULTIPOINT" -> {
                     geometries.add(readMultiPoint(st))
-                } else if (token.equals("MULTILINESTRING")) {
+                }
+                "MULTILINESTRING" -> {
                     geometries.add(readMultiLineString(st))
-                } else if (token.equals("MULTIPOLYGON")) {
+                }
+                "MULTIPOLYGON" -> {
                     geometries.add(readMultiPolygon(st))
                 }
-                token = st.nextToken()
             }
-            result = GeometryCollection(geometries)
-        } else {
-            System.err.println("Unknown geometry type: $name")
-            return null
+            token = st.nextToken()
         }
-        return result
+        return GeometryCollection(geometries)
     }
 }
