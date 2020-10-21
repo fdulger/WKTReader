@@ -7,7 +7,7 @@ import java.util.StringTokenizer
 object MultiLineStringReader {
     fun read(st: StringTokenizer): MultiLineString {
         var token: String = st.nextToken()
-        val lineStrings: ArrayList<LineString> = ArrayList<LineString>()
+        val lineStrings: ArrayList<LineString> = ArrayList()
         while (token != ")") {
             lineStrings.add(LineStringReader.read(st))
             token = st.nextToken()

@@ -10,7 +10,7 @@ object PolygonReader {
         if (outer.isEmpty()) {
             return Polygon()
         }
-        val holes: ArrayList<LineString> = ArrayList<LineString>()
+        val holes: ArrayList<LineString> = ArrayList()
         var token: String = st.nextToken()
         while (token != ")") {
             holes.add(LineStringReader.read(st))

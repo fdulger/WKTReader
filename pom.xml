@@ -66,6 +66,10 @@
         <groupId>com.github.ozsie</groupId>
         <artifactId>detekt-maven-plugin</artifactId>
         <version>1.14.1</version>
+        <configuration>
+          <config>detekt.yml</config>
+          <buildUponDefaultConfig>true</buildUponDefaultConfig>
+        </configuration>
         <executions>
           <execution>
             <phase>verify</phase>

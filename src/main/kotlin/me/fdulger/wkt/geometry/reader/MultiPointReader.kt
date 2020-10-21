@@ -7,7 +7,7 @@ import java.util.StringTokenizer
 object MultiPointReader {
     fun read(st: StringTokenizer): MultiPoint {
         var token: String = st.nextToken()
-        val points: ArrayList<Point> = ArrayList<Point>()
+        val points: ArrayList<Point> = ArrayList()
         while (token != ")") {
             points.add(PointReader.read(st))
             token = st.nextToken()
