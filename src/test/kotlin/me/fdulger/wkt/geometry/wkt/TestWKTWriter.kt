@@ -1,15 +1,9 @@
 package me.fdulger.wkt.geometry.wkt
 
 import me.fdulger.wkt.WKTWriter
+import me.fdulger.wkt.geometry.*
 import org.junit.Assert.assertEquals
-import me.fdulger.wkt.geometry.LineString
-import me.fdulger.wkt.geometry.Point
 import org.junit.Test
-import me.fdulger.wkt.geometry.GeometryCollection
-import me.fdulger.wkt.geometry.MultiLineString
-import me.fdulger.wkt.geometry.MultiPoint
-import me.fdulger.wkt.geometry.MultiPolygon
-import me.fdulger.wkt.geometry.Polygon
 
 class TestWKTWriter {
 
@@ -53,7 +47,12 @@ class TestWKTWriter {
     @Test
     fun testWritePolygon() {
         val writer = WKTWriter()
-        val pg = Polygon(LineString(listOf(Point(0.0, 0.0), Point(0.0, 10.1), Point(10.0, 10.0), Point(10.0, 0.0), Point(0.0, 0.0))), listOf())
+        val pg = Polygon(outer = LineString(listOf(
+                Point(0.0, 0.0),
+                Point(0.0, 10.1),
+                Point(10.0, 10.0),
+                Point(10.0, 0.0),
+                Point(0.0, 0.0))), holes = listOf())
         assertEquals("POLYGON ((0 0, 0 10.1, 10 10, 10 0, 0 0))", writer.write(pg))
     }
 

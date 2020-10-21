@@ -18,3 +18,9 @@ open class GeometryCollection(private var elements: List<Geometry> = mutableList
         return sb.toString()
     }
 }
+
+class MultiLineString(lines: List<LineString>) : GeometryCollection(lines)
+
+class MultiPoint(points: List<Point>) : GeometryCollection(points)
+
+class MultiPolygon(polys: List<Polygon>) : GeometryCollection(polys)

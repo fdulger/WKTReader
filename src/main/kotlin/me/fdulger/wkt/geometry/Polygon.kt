@@ -1,6 +1,6 @@
 package me.fdulger.wkt.geometry
 
-class Polygon @JvmOverloads constructor(
+class Polygon constructor(
         val outer: LineString = LineString(),
         private val holes: List<LineString> = emptyList()): Geometry {
 
@@ -20,3 +20,4 @@ class Polygon @JvmOverloads constructor(
         }
     }
 }
+

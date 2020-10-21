@@ -14,9 +14,8 @@ class TestWKTReader {
     @Test
     fun testReadPoint() {
         val writer = WKTWriter()
-        val reader = WKTReader()
         val p = Point(30.5, 40.0)
-        val p2: Point = reader.read(writer.write(p)) as Point
+        val p2: Point = WKTReader.read(writer.write(p))!! as Point
         assertTrue(!p2.isEmpty())
         assertEquals(p2.x, p.x, 0.0)
         assertEquals(p2.y, p.y, 0.0)
@@ -25,10 +24,8 @@ class TestWKTReader {
     @Test
     fun testReadPolygon() {
         val writer = WKTWriter()
-        val reader = WKTReader()
         val pg = Polygon(LineString(listOf(Point(0.0, 0.0), Point(0.0, 10.1), Point(10.0, 10.0), Point(10.0, 0.0), Point(0.0, 0.0))), emptyList())
-        println(writer.write(pg))
-        val pg2: Polygon = reader.read(writer.write(pg)) as Polygon
+        val pg2: Polygon = WKTReader.read(writer.write(pg)) as Polygon
         assertTrue(!pg2.isEmpty())
         assertEquals(pg.numHoles(), pg2.numHoles())
         assertEquals(pg.outer.size(), pg2.outer.size())

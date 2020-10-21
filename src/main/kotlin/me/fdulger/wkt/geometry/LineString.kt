@@ -15,3 +15,5 @@ class LineString (var points: List<Point> = emptyList()) : Geometry {
     override fun toString(): String = points.joinToString(",", "LINESTRING (", ")") { "${it.x} ${it.y}" }
 
 }
+
+
