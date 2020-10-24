@@ -1,15 +1,13 @@
 package me.fdulger.wkt.geometry
 
-class Polygon constructor(
-        val outer: LineString = LineString(),
-        private val holes: List<LineString> = emptyList()): Geometry {
+data class Polygon constructor(
+    val outer: LineString = LineString(),
+    val holes: List<LineString> = emptyList()
+) : Geometry {
 
     override fun isEmpty(): Boolean = outer.isEmpty()
 
     fun numHoles(): Int = holes.size
-
-    fun getHole(index: Int): LineString? = holes[index]
-    override fun toString(): String = if (outer.isEmpty()) "Poly ()" else "Poly($outer, $holes)"
 
     init {
         if (outer.isEmpty()) {
@@ -20,4 +18,3 @@ class Polygon constructor(
         }
     }
 }
-

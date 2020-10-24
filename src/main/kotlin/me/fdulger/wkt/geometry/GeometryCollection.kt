@@ -1,26 +1,22 @@
 package me.fdulger.wkt.geometry
 
-open class GeometryCollection(private var elements: List<Geometry> = mutableListOf()) : Geometry, Iterable<Geometry> {
+open class GeometryCollection(private var elements: List<Geometry> = mutableListOf()) : Geometry {
 
     fun size(): Int = elements.size
 
     operator fun get(index: Int): Geometry = elements[index]
 
-    override fun iterator(): Iterator<Geometry> = elements.iterator()
-
     override fun isEmpty(): Boolean = elements.isEmpty()
 
-    override fun toString(): String {
-        val sb = StringBuilder(javaClass.simpleName)
-        for (g in this) {
-            sb.append(g)
-        }
-        return sb.toString()
+    override fun equals(other: Any?): Boolean {
+        return this === other || (other is GeometryCollection && elements == other.elements)
     }
+
+    override fun hashCode(): Int = elements.hashCode()
 }
 
-class MultiLineString(lines: List<LineString>) : GeometryCollection(lines)
+data class MultiLineString(val lines: List<LineString> = emptyList()) : GeometryCollection(lines)
 
-class MultiPoint(points: List<Point>) : GeometryCollection(points)
+data class MultiPoint(val points: List<Point>) : GeometryCollection(points)
 
-class MultiPolygon(polys: List<Polygon>) : GeometryCollection(polys)
+data class MultiPolygon(val polys: List<Polygon> = emptyList()) : GeometryCollection(polys)

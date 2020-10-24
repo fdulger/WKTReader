@@ -1,9 +1,15 @@
 package me.fdulger.wkt.geometry.wkt
 
+import kotlin.test.assertEquals
 import me.fdulger.wkt.WKTWriter
-import me.fdulger.wkt.geometry.*
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import me.fdulger.wkt.geometry.GeometryCollection
+import me.fdulger.wkt.geometry.LineString
+import me.fdulger.wkt.geometry.MultiLineString
+import me.fdulger.wkt.geometry.MultiPoint
+import me.fdulger.wkt.geometry.MultiPolygon
+import me.fdulger.wkt.geometry.Point
+import me.fdulger.wkt.geometry.Polygon
+import org.junit.jupiter.api.Test
 
 class TestWKTWriter {
 
@@ -46,8 +52,13 @@ class TestWKTWriter {
                 Point(0.0, 10.1),
                 Point(10.0, 10.0),
                 Point(10.0, 0.0),
-                Point(0.0, 0.0))), holes = listOf())
-        assertEquals("POLYGON ((0 0, 0 10.1, 10 10, 10 0, 0 0))", WKTWriter.write(pg))
+                Point(0.0, 0.0))), holes = listOf(LineString(listOf(
+                        Point(0.0, 0.0),
+                        Point(5.0, 5.0),
+                        Point(0.0, 0.0)))
+                    )
+                )
+        assertEquals("POLYGON ((0 0, 0 10.1, 10 10, 10 0, 0 0), (0 0, 5 5, 0 0))", WKTWriter.write(pg))
     }
 
     @Test
@@ -82,10 +93,22 @@ class TestWKTWriter {
     }
 
     @Test
+    fun testWriteEmptyMultiPoint() {
+        val mp = MultiPoint(listOf())
+        assertEquals("MULTIPOINT EMPTY", WKTWriter.write(mp))
+    }
+
+    @Test
     fun testWriteMultiLineString() {
         val ls = LineString(listOf(Point(30.0, 40.0), Point(60.1, 60.0)))
         val mls = MultiLineString(listOf(ls, ls))
         assertEquals("MULTILINESTRING ((30 40, 60.1 60), (30 40, 60.1 60))", WKTWriter.write(mls))
+    }
+
+    @Test
+    fun testWriteEmptyMultiLineString() {
+        val mls = MultiLineString()
+        assertEquals("MULTILINESTRING EMPTY", WKTWriter.write(mls))
     }
 
     @Test
@@ -98,6 +121,13 @@ class TestWKTWriter {
                 Point(0.0, 0.0))), holes = emptyList())
         val mpg = MultiPolygon(listOf(pg, pg))
         val expect = "MULTIPOLYGON (((0 0, 0 10.1, 10 10, 10 0, 0 0)), ((0 0, 0 10.1, 10 10, 10 0, 0 0)))"
+        assertEquals(expect, WKTWriter.write(mpg))
+    }
+
+    @Test
+    fun testWriteEmptyMultiPolygon() {
+        val mpg = MultiPolygon()
+        val expect = "MULTIPOLYGON EMPTY"
         assertEquals(expect, WKTWriter.write(mpg))
     }
 }

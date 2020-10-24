@@ -9,7 +9,9 @@ object MultiPointReader {
         var token: String = st.nextToken()
         val points: ArrayList<Point> = ArrayList()
         while (token != ")") {
-            points.add(PointReader.read(st))
+            val point = readPoints(st)
+            if (point.isNotEmpty()) points += point
+            if (!st.hasMoreTokens()) break
             token = st.nextToken()
         }
         return MultiPoint(points)

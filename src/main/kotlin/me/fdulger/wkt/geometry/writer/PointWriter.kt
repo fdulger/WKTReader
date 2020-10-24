@@ -5,18 +5,12 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
+val decimalFormat = DecimalFormat("#.#", DecimalFormatSymbols(Locale.getDefault()))
+
 object PointWriter {
-
-    private val df: DecimalFormat
-    init {
-        val otherSymbols = DecimalFormatSymbols(Locale.getDefault())
-        otherSymbols.decimalSeparator = '.'
-        df = DecimalFormat("#.#", otherSymbols)
-    }
-
     fun write(point: Point, printName: Boolean = true): String {
         return if (!point.isEmpty()) {
-            val coords = "(${df.format(point.x)} ${df.format(point.y)})"
+            val coords = "(${decimalFormat.format(point.x)} ${decimalFormat.format(point.y)})"
             if (printName) "POINT $coords" else coords
         } else "POINT EMPTY"
     }

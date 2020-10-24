@@ -13,9 +13,6 @@ object GeometryCollectionReader {
                 "POINT" -> geometries.add(PointReader.read(st))
                 "POLYGON" -> geometries.add(PolygonReader.read(st))
                 "LINESTRING" -> geometries.add(LineStringReader.read(st))
-                "MULTIPOINT" -> geometries.add(MultiPointReader.read(st))
-                "MULTIPOLYGON" -> geometries.add(MultiPolygonReader.read(st))
-                "MULTILINESTRING" -> geometries.add(MultiLineStringReader.read(st))
             }
             token = st.nextToken()
         }

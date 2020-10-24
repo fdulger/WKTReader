@@ -1,5 +1,6 @@
 package me.fdulger.wkt
 
+import java.lang.IllegalArgumentException
 import java.util.StringTokenizer
 import me.fdulger.wkt.geometry.Geometry
 import me.fdulger.wkt.geometry.reader.GeometryCollectionReader
@@ -13,9 +14,6 @@ import me.fdulger.wkt.geometry.reader.PolygonReader
 object WKTReader {
     fun read(wktString: String?): Geometry? {
         val st = StringTokenizer(wktString, "(), ", true)
-        if (!st.hasMoreElements()) {
-            return null
-        }
         return when (val name = st.nextElement()) {
             "POINT" -> PointReader.read(st)
             "POLYGON" -> PolygonReader.read(st)
@@ -24,10 +22,7 @@ object WKTReader {
             "MULTIPOLYGON" -> MultiPolygonReader.read(st)
             "MULTILINESTRING" -> MultiLineStringReader.read(st)
             "GEOMETRYCOLLECTION" -> GeometryCollectionReader.read(st)
-            else -> {
-                System.err.println("Unknown geometry type: $name")
-                null
-            }
+            else -> throw IllegalArgumentException("Unknown geometry type: $name")
         }
     }
 }

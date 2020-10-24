@@ -10,6 +10,7 @@ object MultiPolygonReader {
         val polygons: ArrayList<Polygon> = ArrayList()
         while (token != ")") {
             polygons.add(PolygonReader.read(st))
+            if (!st.hasMoreTokens()) break
             token = st.nextToken()
         }
         return MultiPolygon(polygons)

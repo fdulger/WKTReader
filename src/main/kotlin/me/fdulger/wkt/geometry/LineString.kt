@@ -1,6 +1,6 @@
 package me.fdulger.wkt.geometry
 
-class LineString (var points: List<Point> = emptyList()) : Geometry {
+data class LineString(private var points: List<Point> = emptyList()) : Geometry {
 
     override fun isEmpty(): Boolean = points.isEmpty()
 
@@ -11,9 +11,4 @@ class LineString (var points: List<Point> = emptyList()) : Geometry {
     fun getX(i: Int): Double = points[i].x
 
     fun getY(i: Int): Double = points[i].y
-
-    override fun toString(): String = points.joinToString(",", "LINESTRING (", ")") { "${it.x} ${it.y}" }
-
 }
-
-

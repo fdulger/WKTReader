@@ -13,7 +13,7 @@ object PolygonWriter {
         result.append(LineStringWriter.write(p.outer, false))
                 .append(", ")
         for (i in 0 until p.numHoles()) {
-            result.append(LineStringWriter.write(p.getHole(i)!!, false))
+            result.append(LineStringWriter.write(p.holes[i]!!, false))
                     .append(", ")
         }
         result.replace(result.length - 2, result.length, "")
