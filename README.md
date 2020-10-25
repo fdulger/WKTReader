@@ -1,6 +1,6 @@
 # WKTReader
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/fdulger/WKTReader/maven?style=plastic)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/fdulger/WKTReader/Java%20CI%20with%20Maven?style=flat-square)
 
 Well Known Text Reader &amp; Writer
 
