@@ -1,10 +1,8 @@
 package me.fdulger.wkt.geometry
 
-open class GeometryCollection(private var elements: List<Geometry> = mutableListOf()) : Geometry {
+open class GeometryCollection(var elements: List<Geometry> = mutableListOf()) : Geometry {
 
     fun size(): Int = elements.size
-
-    operator fun get(index: Int): Geometry = elements[index]
 
     override fun isEmpty(): Boolean = elements.isEmpty()
 

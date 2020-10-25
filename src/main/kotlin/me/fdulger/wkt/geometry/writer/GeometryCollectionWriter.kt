@@ -7,23 +7,15 @@ import me.fdulger.wkt.geometry.Polygon
 
 object GeometryCollectionWriter {
     fun write(gc: GeometryCollection): String {
-        val result = StringBuilder("GEOMETRYCOLLECTION ")
-        if (gc.isEmpty()) {
-            result.append("EMPTY")
-            return result.toString()
+        return if (gc.isEmpty()) "GEOMETRYCOLLECTION EMPTY" else {
+            val geometries = gc.elements.joinToString(", ") { when (it) {
+                    is Point -> PointWriter.write(it)
+                    is Polygon -> PolygonWriter.write(it)
+                    is LineString -> LineStringWriter.write(it)
+                    else -> "UNKNOWN GEOMETRY"
+                }
+            }
+            "GEOMETRYCOLLECTION ($geometries)"
         }
-        result.append("(")
-        for (i in 0 until gc.size()) {
-            val g = gc[i]
-            result.append(when (g) {
-                is Point -> PointWriter.write(g)
-                is Polygon -> PolygonWriter.write(g)
-                is LineString -> LineStringWriter.write(g)
-                else -> "unknown geometry"
-            }).append(", ")
-        }
-        result.replace(result.length - 2, result.length, "")
-        result.append(")")
-        return result.toString()
     }
 }

@@ -4,20 +4,9 @@ import me.fdulger.wkt.geometry.LineString
 
 object LineStringWriter {
     fun write(ls: LineString, printName: Boolean = true): String {
-        val result = StringBuilder(if (printName) "LINESTRING " else "")
-        if (ls.isEmpty()) {
-            result.append("EMPTY")
-            return result.toString()
+        return if (ls.isEmpty()) "LINESTRING EMPTY" else {
+            val points = ls.points.joinToString(", ") { PointWriter.write(it, false, false) }
+            if (printName) "LINESTRING ($points)" else "($points)"
         }
-        result.append("(")
-        for (i in 0 until ls.size()) {
-            result.append(decimalFormat.format(ls.getX(i)))
-                    .append(" ")
-                    .append(decimalFormat.format(ls.getY(i)))
-                    .append(", ")
-        }
-        result.replace(result.length - 2, result.length, "")
-        result.append(")")
-        return result.toString()
     }
 }
