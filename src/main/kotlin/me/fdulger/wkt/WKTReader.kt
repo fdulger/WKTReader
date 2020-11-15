@@ -14,6 +14,7 @@ import me.fdulger.wkt.geometry.reader.PolygonReader
 object WKTReader {
     fun read(wktString: String?): Geometry? {
         val st = StringTokenizer(wktString, "(), ", true)
+        if (!st.hasMoreTokens()) throw IllegalArgumentException("invalid input")
         return when (val name = st.nextElement()) {
             "POINT" -> PointReader.read(st)
             "POLYGON" -> PolygonReader.read(st)

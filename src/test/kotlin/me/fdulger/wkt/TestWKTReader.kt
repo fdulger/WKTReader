@@ -1,14 +1,11 @@
-package me.fdulger.wkt.geometry.wkt
+package me.fdulger.wkt
 
-import java.lang.IllegalArgumentException
-import me.fdulger.wkt.WKTReader
-import me.fdulger.wkt.WKTWriter
 import me.fdulger.wkt.geometry.GeometryCollection
-import me.fdulger.wkt.geometry.Point
 import me.fdulger.wkt.geometry.LineString
 import me.fdulger.wkt.geometry.MultiLineString
 import me.fdulger.wkt.geometry.MultiPoint
 import me.fdulger.wkt.geometry.MultiPolygon
+import me.fdulger.wkt.geometry.Point
 import me.fdulger.wkt.geometry.Polygon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

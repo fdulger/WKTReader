@@ -1,7 +1,6 @@
-package me.fdulger.wkt.geometry.wkt
+package me.fdulger.wkt
 
 import kotlin.test.assertEquals
-import me.fdulger.wkt.WKTWriter
 import me.fdulger.wkt.geometry.GeometryCollection
 import me.fdulger.wkt.geometry.LineString
 import me.fdulger.wkt.geometry.MultiLineString
